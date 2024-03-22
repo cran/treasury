@@ -1,0 +1,17 @@
+d77c1f332eaad72c7a0032c7bf3a18fd *DESCRIPTION
+302c5498877eee1c4018ff1830206511 *LICENSE
+27efae302ec1cb2000177186fa6266fa *NAMESPACE
+ee62a822ae55c501f50f68a55e7edf43 *NEWS.md
+ce01e4fe33f9d43539ccd8ec23aa2571 *R/feed.R
+e96aa2be391d4205520ec44ec6fbf383 *R/treasury-package.R
+514e51bfe589d838e3f2e1ec77e03475 *R/utils.R
+b4f7177f316af40ceb0001087db1abe0 *README.md
+6e1db6234ddb481bfdd7329fd59dfc12 *man/figures/README-demo-1.png
+5c70a5c526528a6a98a381aaf5438d63 *man/tr_bill_rates.Rd
+52666112e10ac5b0131b32d1dde23340 *man/tr_long_term_rate.Rd
+32a13c020e2ca8d3db1ce49238bd870c *man/tr_real_long_term.Rd
+151b50859da2b4f511b739e5fc0d5206 *man/tr_real_yield_curve.Rd
+f531f059ca7f781cd820d44ce4d5b671 *man/tr_yield_curve.Rd
+5ce3717b4f7fb0d5105eaaca04085db8 *man/treasury-package.Rd
+ac644e570e1c6f1ab9e7d3d2912489ee *tests/testthat.R
+ca1d52595c2f9ec445d6ecd8f1ba031e *tests/testthat/test-feed.R
