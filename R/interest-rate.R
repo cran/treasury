@@ -1,11 +1,17 @@
-#' Return the daily treasury par yield curve rates
+#' Daily treasury par yield curve rates
+#'
+#' @description
+#' This par yield curve, which relates the par yield on a security to its time to
+#' maturity, is based on the closing market bid prices on the most recently auctioned
+#' Treasury securities in the over-the-counter market. The par yields are derived from
+#' input market prices, which are indicative quotations obtained by the Federal Reserve
+#' Bank of New York at approximately 3:30 PM each business day.
 #'
 #' @param date `character(1)` or `numeric(1)` date in format yyyy or yyyymm.
 #'   If `NULL`, all data is returned. Default `NULL`.
-#' @returns A `data.frame()` with columns `date`, `maturity` and `rate` or
-#'   `NULL` when no entries were found.
-#' @references <https://home.treasury.gov/treasury-daily-interest-rate-xml-feed>
-#' @family treasury data
+#' @returns A `data.frame()` containing the rates or `NULL` when no entries were found.
+#' @source <https://home.treasury.gov/treasury-daily-interest-rate-xml-feed>
+#' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
@@ -44,13 +50,27 @@ clean_yield_curve <- function(data) {
   data
 }
 
-#' Return the daily treasury bill rates
+#' Daily treasury bill rates
 #'
-#' @inheritParams tr_yield_curve
-#' @inherit tr_yield_curve references
-#' @returns A `data.frame()` with columns `date`, `type`, `maturity` and `value`
-#'   or `NULL` when no entries were found.
-#' @family treasury data
+#' @description
+#' These rates are the daily secondary market quotations on the most recently
+#' auctioned Treasury Bills for each maturity tranche (4-week, 8-week, 13-week,
+#' 17-week, 26-week, and 52-week) for which Treasury currently issues new
+#' bills.
+#'
+#' @details
+#' Market quotations are obtained at approximately 3:30 PM each business
+#' day by the Federal Reserve Bank of New York. The Bank Discount rate is the
+#' rate at which a bill is quoted in the secondary market and is based on the
+#' par value, amount of the discount and a 360-day year. The Coupon Equivalent,
+#' also called the Bond Equivalent, or the Investment Yield, is the bill's
+#' yield based on the purchase price, discount, and a 365- or 366-day year. The
+#' Coupon Equivalent can be used to compare the yield on a discount bill to the
+#' yield on a nominal coupon security that pays semiannual interest with the
+#' same maturity date.
+#'
+#' @inherit tr_yield_curve
+#' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
@@ -86,19 +106,24 @@ clean_bill_rates <- function(data) {
   data$type <- gsub("round_b1_", "", data$type, fixed = TRUE)
   data$type <- gsub("_2$", "", data$type)
   maturity <- strsplit(data$type, "_", fixed = TRUE)
-  data$type <- vapply(maturity, "[[", NA_character_, 1L)
-  data$maturity <- vapply(maturity, "[[", NA_character_, 2L)
-  data$maturity <- gsub("wk", " weeks", data$maturity, fixed = TRUE)
+  data$type <- vapply(maturity, `[[`, NA_character_, 1L)
+  maturity <- vapply(maturity, `[[`, NA_character_, 2L)
+  data$maturity <- gsub("wk", " weeks", maturity, fixed = TRUE)
   data[c("date", "type", "maturity", "value")]
 }
 
-#' Return the daily treasury long-term rates
+#' Daily treasury long-term rates
 #'
-#' @inheritParams tr_yield_curve
-#' @inherit tr_yield_curve references
-#' @returns A `data.frame()` with columns `date`, `rate_type` and `rate` or
-#'   `NULL` when no entries were found.
-#' @family treasury data
+#' @description
+#' Treasury ceased publication of the 30-year constant maturity series on
+#' February 18, 2002 and resumed that series on February 9, 2006.
+#' To estimate a 30-year rate during that time frame, this series includes the
+#' Treasury 20-year Constant Maturity rate and an "adjustment factor," which may be
+#' added to the 20-year rate to estimate a 30-year rate during the period of time in
+#' which Treasury did not issue the 30-year bonds.
+#'
+#' @inherit tr_yield_curve
+#' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
@@ -138,13 +163,19 @@ clean_long_term_rate <- function(data) {
   data
 }
 
-#' Return the daily treasury par real yield curve rates
+#' Daily treasury par real yield curve rates
 #'
-#' @inheritParams tr_yield_curve
-#' @inherit tr_yield_curve references
-#' @returns A `data.frame()` with columns `date`, `maturity` and `rate` or
-#'   `NULL` when no entries where found.
-#' @family treasury data
+#' @description
+#' The par real curve, which relates the par real yield on a Treasury Inflation
+#' Protected Security (TIPS) to its time to maturity, is based on the closing market
+#' bid prices on the most recently auctioned TIPS in the over-the-counter market.
+#' The par real yields are derived from input market prices, which are indicative
+#' quotations obtained by the Federal Reserve Bank of New York at approximately 3:30 PM
+#' each business day. Treasury began publishing this series on January 2, 2004.
+#' At that time Treasury released 1 year of historical data.
+#'
+#' @inherit tr_yield_curve
+#' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
@@ -184,13 +215,15 @@ clean_real_yield_curves <- function(data) {
   data
 }
 
-#' Return the daily treasury real long-term rates
+#' Daily treasury real long-term rate averages
 #'
-#' @inheritParams tr_yield_curve
-#' @inherit tr_yield_curve references
-#' @returns A `data.frame()` with columns `date` and `rate` or `NULL` when no
-#'   entries where found.
-#' @family treasury data
+#' @description
+#' The Long-Term Real Rate Average is the unweighted average of bid real yields
+#' on all outstanding TIPS with remaining maturities of more than 10 years and
+#' is intended as a proxy for long-term real rates.
+#'
+#' @inherit tr_yield_curve
+#' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
@@ -278,6 +311,5 @@ tr_parse_response <- function(resp, fn) {
   if (length(entries) == 0L) {
     return()
   }
-  data <- lapply(entries, fn)
-  do.call(rbind, data)
+  do.call(rbind, lapply(entries, fn))
 }
