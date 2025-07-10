@@ -10,11 +10,11 @@
 tr_long_term_rate(date = NULL)
 }
 \arguments{
-\item{date}{\code{character(1)} or \code{numeric(1)} date in format yyyy or yyyymm.
+\item{date}{(\code{character(1)} | \code{numeric(1)}) date in format yyyy or yyyymm.
 If \code{NULL}, all data is returned. Default \code{NULL}.}
 }
 \value{
-A \code{data.frame()} containing the rates or \code{NULL} when no entries were found.
+A \code{\link[data.table:data.table]{data.table::data.table()}} containing the rates or \code{NULL} when no entries were found.
 }
 \description{
 Treasury ceased publication of the 30-year constant maturity series on
@@ -27,7 +27,7 @@ which Treasury did not issue the 30-year bonds.
 \examples{
 \donttest{
 # get data for a single month
-tr_long_term_rate("202201")
+tr_long_term_rate("202212")
 # or for the entire year
 tr_long_term_rate(2022)
 }

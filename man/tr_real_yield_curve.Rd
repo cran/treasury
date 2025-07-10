@@ -10,11 +10,11 @@
 tr_real_yield_curve(date = NULL)
 }
 \arguments{
-\item{date}{\code{character(1)} or \code{numeric(1)} date in format yyyy or yyyymm.
+\item{date}{(\code{character(1)} | \code{numeric(1)}) date in format yyyy or yyyymm.
 If \code{NULL}, all data is returned. Default \code{NULL}.}
 }
 \value{
-A \code{data.frame()} containing the rates or \code{NULL} when no entries were found.
+A \code{\link[data.table:data.table]{data.table::data.table()}} containing the rates or \code{NULL} when no entries were found.
 }
 \description{
 The par real curve, which relates the par real yield on a Treasury Inflation
