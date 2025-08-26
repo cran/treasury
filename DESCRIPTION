@@ -1,6 +1,6 @@
 Package: treasury
 Title: Client for US Treasury XML Feed and Published Data
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
     person("Maximilian", "Mücke", , "muecke.maximilian@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0000-9432-9795"))
@@ -15,15 +15,15 @@ URL: https://m-muecke.github.io/treasury/,
         https://github.com/m-muecke/treasury
 BugReports: https://github.com/m-muecke/treasury/issues
 Depends: R (>= 4.1.0)
-Imports: data.table (>= 1.16.0), httr2 (>= 1.0.0), xml2
-Suggests: ggplot2, readxl, testthat (>= 3.0.0)
+Imports: curl, data.table (>= 1.16.0), httr2 (>= 1.0.0), xml2
+Suggests: ggplot2, readxl, scales, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2025-07-10 12:18:19 UTC; mmuecke
+Packaged: 2025-08-26 19:06:26 UTC; mmuecke
 Author: Maximilian Mücke [aut, cre] (ORCID:
     <https://orcid.org/0009-0000-9432-9795>)
 Maintainer: Maximilian Mücke <muecke.maximilian@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-07-10 13:10:02 UTC
+Date/Publication: 2025-08-26 20:50:02 UTC

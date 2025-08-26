@@ -7,15 +7,20 @@
 #' The Treasury Breakeven Inflation Curve (TBI curve) is derived from the TNC and TRC
 #' yield curves combined.
 #'
-#' @param x (`character(1)`) one of the following options:
+#' @section Deprecated functions:
+#' [tr_par_yields()] has been deprecated and will be removed in a future version. Please use
+#' [tr_par_yield()] instead.
+#'
+#' @param x (`character(1)`)\cr
+#'   One of the following options:
 #'   * `"hqm"`: The Treasury High Quality Market (HQM) Corporate Bond Yield Curve.
 #'   * `"tnc"`: The Treasury Nominal Coupon-Issue (TNC) Yield Curve.
 #'   * `"trc"`: The Treasury Real Coupon-Issue (TRC) Yield Curve.
 #'   * `"tbi"`: The Treasury Breakeven Inflation (TBI) Curve.
-#' @param type (`character(1)`) either `"monthly"` or `"end-of-month"`.
-#'   Default is `"monthly"`.
-#' @param year (`integer(1)`) year to download. Default is `NULL`.
-#'   If `NULL`, then all available years are downloaded.
+#' @param type (`character(1)`)\cr
+#'   Either `"monthly"` or `"end-of-month"`. Default is `"monthly"`.
+#' @param year (`NULL` | `integer(1)`)\cr
+#'   Year to download. Default is `NULL`. If `NULL`, then all available years are downloaded.
 #' @returns A [data.table::data.table()] containing the treasury rates.
 #' @family yield curve
 #' @source <https://home.treasury.gov/data/treasury-coupon-issues-and-corporate-bond-yield-curves>
@@ -26,7 +31,7 @@
 #' tr_curve_rate("tbi")
 #' tr_curve_rate("trc", "end-of-month", 2024L)
 #' # TRC Treasury Yield Curve Par Yields, Monthly Average
-#' tr_par_yields("trc")
+#' tr_par_yield("trc")
 #' # TNC Treasury Yield Curve Forward Rates, End of Month
 #' tr_forward_rate("tnc", "end-of-month")
 #' }
@@ -35,7 +40,7 @@ tr_curve_rate <- function(
   type = c("monthly", "end-of-month"),
   year = NULL
 ) {
-  if (requireNamespace("readxl", quietly = TRUE)) {
+  if (!requireNamespace("readxl", quietly = TRUE)) {
     stop("Please install the readxl package to use this function.", call. = FALSE)
   }
   stopifnot(is_count(year, null_ok = TRUE))
@@ -43,7 +48,7 @@ tr_curve_rate <- function(
   type <- match.arg(type)
   start_year <- switch(x, hqm = 1984L, tnc = 1978L, trc = 2003L, tbi = 2003L)
   x <- if (type == "monthly") x else paste0(x, "eom")
-  years <- seq(start_year, 2027L, by = 5L)
+  years <- seq.int(start_year, 2027L, by = 5L)
   if (!is.null(year)) {
     years <- years[findInterval(year, years)]
   }
@@ -68,15 +73,14 @@ tr_curve_rate <- function(
   res <- lapply(seq_along(urls), function(i) {
     tf <- tempfile()
     on.exit(unlink(tf), add = TRUE)
-    utils::download.file(urls[[i]], destfile = tf, quiet = TRUE, mode = "wb")
-    dt <- readxl::read_excel(tf, skip = 4L, .name_repair = function(nms) {
+    curl::curl_download(urls[[i]], tf)
+    dt <- setDT(readxl::read_excel(tf, skip = 4L, .name_repair = function(nms) {
       year <- years[[i]]
       years <- rep(year:(year + 4L), each = 12L)
       nms <- paste(months, years, sep = "-")
       nms <- c("maturity", "tmp", nms)
       nms
-    })
-    dt <- setDT(dt)
+    }))
     dt[, 2L := NULL]
     dt[, names(.SD) := lapply(.SD, as.numeric), .SDcols = is.logical]
     dt <- melt(
@@ -94,8 +98,8 @@ tr_curve_rate <- function(
 
 #' @rdname tr_curve_rate
 #' @export
-tr_par_yields <- function(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-of-month")) {
-  if (requireNamespace("readxl", quietly = TRUE)) {
+tr_par_yield <- function(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-of-month")) {
+  if (!requireNamespace("readxl", quietly = TRUE)) {
     stop("Please install the readxl package to use this function.", call. = FALSE)
   }
   x <- match.arg(x)
@@ -123,14 +127,20 @@ tr_par_yields <- function(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-o
     sfx <- "eom_qh_pars"
   }
   x <- paste0(x, sfx)
-
   download_data(x, nms, 6L, "maturity", "par_yield")
 }
 
 #' @rdname tr_curve_rate
 #' @export
+tr_par_yields <- function(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-of-month")) {
+  .Deprecated("tr_par_yield")
+  tr_par_yield(x, type)
+}
+
+#' @rdname tr_curve_rate
+#' @export
 tr_forward_rate <- function(x = c("tnc", "trc", "tbi"), type = c("monthly", "end-of-month")) {
-  if (requireNamespace("readxl", quietly = TRUE)) {
+  if (!requireNamespace("readxl", quietly = TRUE)) {
     stop("Please install the readxl package to use this function.", call. = FALSE)
   }
   x <- match.arg(x)
@@ -158,9 +168,8 @@ download_data <- function(x, col_names, skip, names_to, values_to) {
   url <- sprintf("https://home.treasury.gov/system/files/226/%s.xls", x)
   tf <- tempfile()
   on.exit(unlink(tf), add = TRUE)
-  utils::download.file(url, destfile = tf, quiet = TRUE, mode = "wb")
-  dt <- readxl::read_excel(tf, col_names = col_names, skip = skip)
-  dt <- setDT(dt)
+  curl::curl_download(url, tf)
+  dt <- setDT(readxl::read_excel(tf, col_names = col_names, skip = skip))
   dt[, 2L := NULL]
   dt <- melt(dt, id.vars = "yearmonth", variable.name = names_to, value.name = values_to)
   dt[, yearmonth := as.Date(paste("01", yearmonth), format = "%d %B %Y")][]

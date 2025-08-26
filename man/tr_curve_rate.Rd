@@ -2,6 +2,7 @@
 % Please edit documentation in R/yield-curve.R
 \name{tr_curve_rate}
 \alias{tr_curve_rate}
+\alias{tr_par_yield}
 \alias{tr_par_yields}
 \alias{tr_forward_rate}
 \title{Download Treasury Coupon Issues and Corporate Bond Yield Curves}
@@ -15,6 +16,8 @@ tr_curve_rate(
   year = NULL
 )
 
+tr_par_yield(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-of-month"))
+
 tr_par_yields(x = c("hqm", "tnc", "trc"), type = c("monthly", "end-of-month"))
 
 tr_forward_rate(
@@ -23,7 +26,8 @@ tr_forward_rate(
 )
 }
 \arguments{
-\item{x}{(\code{character(1)}) one of the following options:
+\item{x}{(\code{character(1)})\cr
+One of the following options:
 \itemize{
 \item \code{"hqm"}: The Treasury High Quality Market (HQM) Corporate Bond Yield Curve.
 \item \code{"tnc"}: The Treasury Nominal Coupon-Issue (TNC) Yield Curve.
@@ -31,11 +35,11 @@ tr_forward_rate(
 \item \code{"tbi"}: The Treasury Breakeven Inflation (TBI) Curve.
 }}
 
-\item{type}{(\code{character(1)}) either \code{"monthly"} or \code{"end-of-month"}.
-Default is \code{"monthly"}.}
+\item{type}{(\code{character(1)})\cr
+Either \code{"monthly"} or \code{"end-of-month"}. Default is \code{"monthly"}.}
 
-\item{year}{(\code{integer(1)}) year to download. Default is \code{NULL}.
-If \code{NULL}, then all available years are downloaded.}
+\item{year}{(\code{NULL} | \code{integer(1)})\cr
+Year to download. Default is \code{NULL}. If \code{NULL}, then all available years are downloaded.}
 }
 \value{
 A \code{\link[data.table:data.table]{data.table::data.table()}} containing the treasury rates.
@@ -47,13 +51,19 @@ Treasury nominal notes and bonds. The Yield Curve for Treasury Real Coupon Issue
 The Treasury Breakeven Inflation Curve (TBI curve) is derived from the TNC and TRC
 yield curves combined.
 }
+\section{Deprecated functions}{
+
+\code{\link[=tr_par_yields]{tr_par_yields()}} has been deprecated and will be removed in a future version. Please use
+\code{\link[=tr_par_yield]{tr_par_yield()}} instead.
+}
+
 \examples{
 \dontrun{
 # TBI Treasury Curve Breakeven Rates
 tr_curve_rate("tbi")
 tr_curve_rate("trc", "end-of-month", 2024L)
 # TRC Treasury Yield Curve Par Yields, Monthly Average
-tr_par_yields("trc")
+tr_par_yield("trc")
 # TNC Treasury Yield Curve Forward Rates, End of Month
 tr_forward_rate("tnc", "end-of-month")
 }

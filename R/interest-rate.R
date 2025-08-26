@@ -7,8 +7,8 @@
 #' input market prices, which are indicative quotations obtained by the Federal Reserve
 #' Bank of New York at approximately 3:30 PM each business day.
 #'
-#' @param date (`character(1)` | `numeric(1)`) date in format yyyy or yyyymm.
-#'   If `NULL`, all data is returned. Default `NULL`.
+#' @param date (`NULL` | `character(1)` | `numeric(1)`)\cr
+#'   Date in format yyyy or yyyymm. If `NULL`, all data is returned. Default `NULL`.
 #' @returns A [data.table::data.table()] containing the rates or `NULL` when no entries were found.
 #' @source <https://home.treasury.gov/treasury-daily-interest-rate-xml-feed>
 #' @family interest rate
@@ -66,25 +66,36 @@ clean_yield_curve <- function(dt) {
 #' yield on a nominal coupon security that pays semiannual interest with the
 #' same maturity date.
 #'
+#' @section Deprecated functions:
+#' [tr_bill_rates()] has been deprecated and will be removed in a future version. Please use
+#' [tr_bill_rate()] instead.
+#'
 #' @inherit tr_yield_curve
 #' @family interest rate
 #' @export
 #' @examples
 #' \donttest{
 #' # get data for a single month
-#' tr_bill_rates("202201")
+#' tr_bill_rate("202201")
 #' # or for the entire year
-#' tr_bill_rates(2022)
+#' tr_bill_rate(2022)
 #' }
-tr_bill_rates <- function(date = NULL) {
-  dt <- treasury("daily_treasury_bill_rates", date, parse_bill_rates)
+tr_bill_rate <- function(date = NULL) {
+  dt <- treasury("daily_treasury_bill_rates", date, parse_bill_rate)
   if (is.null(dt)) {
     return()
   }
-  clean_bill_rates(dt)
+  clean_bill_rate(dt)
 }
 
-parse_bill_rates <- function(x) {
+#' @rdname tr_bill_rate
+#' @export
+tr_bill_rates <- function(date = NULL) {
+  .Deprecated("tr_bill_rate")
+  tr_bill_rate(date)
+}
+
+parse_bill_rate <- function(x) {
   date <- x |>
     xml2::xml_find_all(".//d:INDEX_DATE") |>
     xml2::xml_text() |>
@@ -97,7 +108,7 @@ parse_bill_rates <- function(x) {
   )
 }
 
-clean_bill_rates <- function(dt) {
+clean_bill_rate <- function(dt) {
   dt[, type := gsub("round_b1_", "", tolower(type), fixed = TRUE)]
   dt[, type := gsub("_2$", "", type)]
   dt[, maturity := strsplit(type, "_", fixed = TRUE)]

@@ -10,8 +10,8 @@
 tr_long_term_rate(date = NULL)
 }
 \arguments{
-\item{date}{(\code{character(1)} | \code{numeric(1)}) date in format yyyy or yyyymm.
-If \code{NULL}, all data is returned. Default \code{NULL}.}
+\item{date}{(\code{NULL} | \code{character(1)} | \code{numeric(1)})\cr
+Date in format yyyy or yyyymm. If \code{NULL}, all data is returned. Default \code{NULL}.}
 }
 \value{
 A \code{\link[data.table:data.table]{data.table::data.table()}} containing the rates or \code{NULL} when no entries were found.
@@ -34,7 +34,7 @@ tr_long_term_rate(2022)
 }
 \seealso{
 Other interest rate: 
-\code{\link{tr_bill_rates}()},
+\code{\link{tr_bill_rate}()},
 \code{\link{tr_real_long_term}()},
 \code{\link{tr_real_yield_curve}()},
 \code{\link{tr_yield_curve}()}
